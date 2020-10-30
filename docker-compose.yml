@@ -1,0 +1,11 @@
+version: "3.7"
+
+services:
+  dice-backend:
+    build:
+      context: .
+      dockerfile: Dockerfile.eth
+    ports:
+      - "$PORT:$PORT"
+    env_file: .env
+    restart: always
