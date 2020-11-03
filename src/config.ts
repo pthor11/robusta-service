@@ -5,6 +5,9 @@ config()
 if (!process.env.MONGO_URI) throw new Error(`mongo uri must be provided`)
 export const mongoUri = process.env.MONGO_URI
 
+if (!process.env.PORT) throw new Error(`port must be provided`)
+export const port = process.env.PORT
+
 if (!process.env.BLOCK_INIT) throw new Error(`block init must be provided`)
 export const blockInit = process.env.BLOCK_INIT
 
