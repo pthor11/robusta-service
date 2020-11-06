@@ -15,7 +15,7 @@ const kafka = new Kafka({
     requestTimeout: 60000,
 })
 
-const producer = kafka.producer()
+const producer = kafka.producer({ maxInFlightRequests: 1, idempotent: true, transactionalId: 'robusta-service-debug-transactional-id-abdskh' })
 const consumer = kafka.consumer({ groupId: kafkaConfig.groupId })
 
 const connectKafkaProducer = async () => {
