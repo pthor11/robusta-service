@@ -3,7 +3,7 @@ import { IndexSpecification, ObjectID } from "mongodb";
 type User = {
     _id?: ObjectID
     slug: string
-    uuid: string
+    // uuid: string
     apiKey: string
     expiredAt: Date
     updatedAt: Date
@@ -11,7 +11,7 @@ type User = {
 }
 
 const UserIndexes: IndexSpecification[] = [
-    { key: { uuid: 1 }, unique: true },
+    // { key: { uuid: 1 }, unique: true },
     { key: { apiKey: 1 }, unique: true },
 ]
 

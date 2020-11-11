@@ -1,5 +1,3 @@
-import { IndexSpecification, ObjectID } from "mongodb";
-
 const CurrencyType = {
     btc: 'btc',
     bch: 'bch',
@@ -15,22 +13,12 @@ const CurrencyType = {
 const CurrencyTypes = Object.keys(CurrencyType)
 
 type Currency = {
-    _id?: ObjectID
     type: string
-    address: string | null
-    watch: boolean
-    createdAt: Date
+    address: string
 }
 
-const CurrencyIndexes: IndexSpecification[] = [
-    { key: { address: 1 }, unique: true },
-    { key: { type: 1 } },
-    { key: { watch: 1 } }
-]
-
 export {
+    Currency,
     CurrencyType,
     CurrencyTypes,
-    Currency,
-    CurrencyIndexes
 }

@@ -13,23 +13,23 @@ const user_api_key_create = async (params: { request: any }): Promise<CallReturn
 
         console.log({ slug });
 
-        const apiInfo = UUIDAPIKey.create({ noDashes: false })
+        const { apiKey } = UUIDAPIKey.create({ noDashes: false })
 
-        console.log({ apiInfo });
+        console.log({ apiKey });
 
-        const foundUser = await db.collection(collectionNames.users).findOne({ uuid: apiInfo.uuid }, { session })
+        const foundUser = await db.collection(collectionNames.users).findOne({ apiKey }, { session })
 
         console.log({ foundUser });
 
         if (!foundUser) {
-            const { insertedId } = await db.collection(collectionNames.users).insertOne({ slug, ...apiInfo, createAt: new Date() }, { session })
+            const { insertedId } = await db.collection(collectionNames.users).insertOne({ slug, apiKey, createAt: new Date() }, { session })
 
-            console.log({insertedId});
-            
+            console.log({ insertedId });
+
             await session.commitTransaction()
             session.endSession()
 
-            return { result: apiInfo.apiKey }
+            return { result: apiKey }
         } else {
             await session.abortTransaction()
             session.endSession()

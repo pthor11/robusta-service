@@ -1,15 +1,20 @@
-import { initGrpcServer } from "./grpc"
-import { connectKafkaConsumer, connectKafkaProducer } from "./kafka"
 import { connectDb } from "./mongo"
-import { syncBlock } from "./service/syncBlocks"
+import { initGrpcServer } from "./grpc"
+// import { connectKafkaConsumer, connectKafkaProducer } from "./kafka"
+// import { processTxs } from "./service/processTxs"
+// import { syncBlock } from "./service/syncBlocks"
 
 const start = async () => {
     try {
-        await connectDb()
-        // await initGrpcServer()
         // await connectKafkaProducer()
+        await connectDb()
+        await initGrpcServer()
+        // await initCache()
+        // await processTxs()
+        
+    
         // await connectKafkaConsumer()
-        await syncBlock()
+        // await syncBlock()
     } catch (e) {
         throw e
     }
