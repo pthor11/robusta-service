@@ -1,22 +1,14 @@
 import { connect, Db, MongoClient } from "mongodb";
 import { mongoUri } from "./config";
 import { AccountIndexes } from "./models/Account";
-import { BlockBBIndexes } from "./models/Block.BB";
-import { CurrencyIndexes } from "./models/Currency";
-import { SyncIndexes } from "./models/Sync";
-import { TxBBIndexes } from "./models/Tx.BB";
 import { UserIndexes } from "./models/User";
 
 let client: MongoClient
 let db: Db
 
 const collectionNames = {
-    syncs: 'syncs',
     users: 'users',
-    txs: 'txs',
     accounts: 'accounts',
-    currencies: 'currencies',
-    // changes: 'changes'
 }
 
 const connectDb = async () => {
@@ -58,11 +50,8 @@ const connectDb = async () => {
         db = client.db()
 
         await Promise.all([
-            db.collection(collectionNames.syncs).createIndexes(SyncIndexes),
             db.collection(collectionNames.users).createIndexes(UserIndexes),
-            db.collection(collectionNames.accounts).createIndexes(AccountIndexes),
-            db.collection(collectionNames.currencies).createIndexes(CurrencyIndexes),
-            db.collection(collectionNames.txs).createIndexes(TxBBIndexes)
+            db.collection(collectionNames.accounts).createIndexes(AccountIndexes)
         ])
 
         console.log(`Mongodb: connected`)

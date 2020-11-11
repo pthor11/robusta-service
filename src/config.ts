@@ -24,15 +24,11 @@ if (process.env.KAFKA_MECHANISM && !process.env.KAFKA_USERNAME) throw new Error(
 if (process.env.KAFKA_MECHANISM && !process.env.KAFKA_PASSWORD) throw new Error(`Kafka password must be provided with mechanism ${process.env.KAFKA_MECHANISM}`)
 
 export const kafkaConfig = {
-    clientId: process.env.KAFKA_CLIENT_ID,
-    groupId: process.env.KAFKA_GROUP_ID,
-    brokers: process.env.KAFKA_BROKERS,
-    mechanism: process.env.KAFKA_MECHANISM,
-    username: process.env.KAFKA_USERNAME,
-    password: process.env.KAFKA_PASSWORD,
+    clientId: process.env.COIN_KAFKA_CLIENT_ID,
+    brokers: process.env.COIN_KAFKA_BROKERS,
     topic: {
-        consume: { subscribe: 'subscribe' },
-        produce: { change: 'change' }
+        consume: {},
+        produce: { change: 'watch' }
     }
 }
 
