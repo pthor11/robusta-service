@@ -26,37 +26,38 @@ const user_account_watch = async (params: { request: any }): Promise<CallReturn>
 
         console.log({ foundUser });
 
-        if (!foundUser) throw { code: 'user not found' }
+        if (!foundUser) throw { error: 'user not found' }
 
         // check address valid
         switch (_params.currency.type) {
             case CurrencyType.trx:
             case CurrencyType.trc10:
             case CurrencyType.trc20:
-                if (!tronweb.isAddress(_params.address)) throw new Error(`invalid account address`)
+                if (!tronweb.isAddress(_params.address)) throw { error: 'invalid account address' }
                 break;
-            default:
-                break;
+            default: throw { error: `currency type ${_params.currency.type} not support` }
         }
 
         // check currency valid
         switch (_params.currency.type) {
             case CurrencyType.trc10:
-                if (!Number.isNaN(parseInt(_params.currency.address))) throw new Error(`${_params.currency.address} is invalid contract type trc10 address`)
+                if (Number.isNaN(parseInt(_params.currency.address))) throw new Error(`${_params.currency.address} is invalid contract type trc10 address`)
                 break
             case CurrencyType.trc20:
-                if (!tronweb.isAddress(_params.address)) throw new Error(`${_params.currency.address} is invalid contract type ${_params.currency.type} address`)
+                if (!tronweb.isAddress(_params.address)) throw new Error(`${_params.currency.address} is invalid contract type trc20 address`)
                 break;
             default:
                 break;
         }
 
 
-        const foundAccount = await db.collection(collectionNames.accounts).findOne({}, { session })
+        const foundAccount = await db.collection(collectionNames.accounts).findOne({ apiKey: _params.apiKey, address: _params.address, "currency.type": _params.currency.type, "currency.address": _params.currency.address }, { session })
 
-        if (foundAccount) throw { code: 'account already watched' }
+        console.log({ foundAccount });
 
-        await db.collection(collectionNames.accounts).insertOne({}, { session })
+        if (foundAccount) throw { error: 'account already watched' }
+
+        await db.collection(collectionNames.accounts).insertOne({ ..._params, createdAt: new Date() }, { session })
 
         await session.commitTransaction()
         session.endSession()
@@ -74,6 +75,7 @@ const user_account_watch = async (params: { request: any }): Promise<CallReturn>
         session.endSession()
 
         if (e.code === 112) return user_account_watch(params)
+        if (e.error) return e
         throw e
     }
 }

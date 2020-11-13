@@ -3,6 +3,7 @@ import { Currency } from "./Currency";
 
 type Account = {
     _id?: ObjectID
+    apiKey: string
     address: string
     currency: Currency
     watch: boolean
@@ -10,7 +11,7 @@ type Account = {
 }
 
 const AccountIndexes: IndexSpecification[] = [
-    { key: { address: 1, "currency.type": 1, "currency.address": 1 }, unique: true },
+    { key: { apiKey: 1, address: 1, "currency.type": 1, "currency.address": 1 }, unique: true },
     { key: { watch: 1 } }
 ]
 
