@@ -4,6 +4,7 @@ import { Currency, CurrencyType } from "../models/Currency";
 import { coinProducer } from "../kafka";
 import { coinKafkaConfig } from "../config";
 import { tronweb } from "../tronweb";
+import { WatchMessage } from "../models/WatchMessage";
 
 type UserAccountWatchParams = {
     apiKey: string
@@ -62,14 +63,21 @@ const user_account_watch = async (params: { request: any }): Promise<CallReturn>
         await session.commitTransaction()
         session.endSession()
 
+        const message: WatchMessage = {
+            ..._params,
+            watch: true
+        }
+
+        const stringifiedMessage = JSON.stringify(message)
+
         const record = await coinProducer.send({
             topic: coinKafkaConfig.topic.produce.watch,
-            messages: [{ value: JSON.stringify(_params) }]
+            messages: [{ value: stringifiedMessage }]
         })
 
         console.log({ record });
 
-        return { result: 'success' }
+        return { result: stringifiedMessage }
     } catch (e) {
         await session.abortTransaction()
         session.endSession()
