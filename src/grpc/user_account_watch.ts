@@ -1,6 +1,9 @@
 import { CallReturn } from "./call"
 import { client, collectionNames, db } from "../mongo";
-import { Currency } from "../models/Currency";
+import { Currency, CurrencyType } from "../models/Currency";
+import { coinProducer } from "../kafka";
+import { coinKafkaConfig } from "../config";
+import { tronweb } from "../tronweb";
 
 type UserAccountWatchParams = {
     apiKey: string
@@ -26,8 +29,28 @@ const user_account_watch = async (params: { request: any }): Promise<CallReturn>
         if (!foundUser) throw { code: 'user not found' }
 
         // check address valid
+        switch (_params.currency.type) {
+            case CurrencyType.trx:
+            case CurrencyType.trc10:
+            case CurrencyType.trc20:
+                if (!tronweb.isAddress(_params.address)) throw new Error(`invalid account address`)
+                break;
+            default:
+                break;
+        }
 
         // check currency valid
+        switch (_params.currency.type) {
+            case CurrencyType.trc10:
+                if (!Number.isNaN(parseInt(_params.currency.address))) throw new Error(`${_params.currency.address} is invalid contract type trc10 address`)
+                break
+            case CurrencyType.trc20:
+                if (!tronweb.isAddress(_params.address)) throw new Error(`${_params.currency.address} is invalid contract type ${_params.currency.type} address`)
+                break;
+            default:
+                break;
+        }
+
 
         const foundAccount = await db.collection(collectionNames.accounts).findOne({}, { session })
 
@@ -37,6 +60,13 @@ const user_account_watch = async (params: { request: any }): Promise<CallReturn>
 
         await session.commitTransaction()
         session.endSession()
+
+        const record = await coinProducer.send({
+            topic: coinKafkaConfig.topic.produce.watch,
+            messages: [{ value: JSON.stringify(_params) }]
+        })
+
+        console.log({ record });
 
         return { result: 'success' }
     } catch (e) {

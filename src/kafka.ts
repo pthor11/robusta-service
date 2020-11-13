@@ -1,9 +1,9 @@
-import { EachMessagePayload, Kafka, SASLMechanism, Transaction } from "kafkajs";
-import { kafkaConfig } from "./config";
+import { Kafka} from "kafkajs";
+import { coinKafkaConfig } from "./config";
 
 const coinKafka = new Kafka({
-    clientId: kafkaConfig.clientId,
-    brokers: kafkaConfig.brokers?.split(',') || [],
+    clientId: coinKafkaConfig.clientId,
+    brokers: coinKafkaConfig.brokers?.split(',') || [],
     ssl: false,
     sasl: undefined,
     connectionTimeout: 5000,
@@ -12,7 +12,7 @@ const coinKafka = new Kafka({
 
 const coinProducer = coinKafka.producer({ allowAutoTopicCreation: true })
 
-const connectKafkaProducer = async () => {
+const connectCoinProducer = async () => {
     try {
         await coinProducer.connect()
 
@@ -25,5 +25,5 @@ const connectKafkaProducer = async () => {
 
 export {
     coinProducer,
-    connectKafkaProducer
+    connectCoinProducer
 }
