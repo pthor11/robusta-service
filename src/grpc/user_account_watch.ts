@@ -58,7 +58,7 @@ const user_account_watch = async (params: { request: any }): Promise<CallReturn>
 
         if (foundAccount) throw { error: 'account already watched' }
 
-        await db.collection(collectionNames.accounts).insertOne({ ..._params, createdAt: new Date() }, { session })
+        await db.collection(collectionNames.accounts).insertOne({ ..._params, watch: true, createdAt: new Date() }, { session })
 
         await session.commitTransaction()
         session.endSession()
