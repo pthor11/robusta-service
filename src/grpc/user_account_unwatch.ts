@@ -45,8 +45,23 @@ const user_account_unwatch = async (params: { request: any }): Promise<CallRetur
 
         const stringifiedMessage = JSON.stringify(message)
 
+        let topic: string
+
+        switch (_params.currency.type) {
+            case CurrencyType.trx:
+            case CurrencyType.trc10:
+            case CurrencyType.trc20:
+                topic = coinKafkaConfig.topic.produce.trx
+                break;
+
+            default:
+                break;
+        }
+
+        console.log({ topic: topic! });
+
         const record = await coinProducer.send({
-            topic: coinKafkaConfig.topic.produce.watch,
+            topic: topic!,
             messages: [{ value: stringifiedMessage }]
         })
 

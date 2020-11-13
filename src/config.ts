@@ -16,7 +16,14 @@ export const coinKafkaConfig = {
     brokers: process.env.COIN_KAFKA_BROKERS,
     topic: {
         consume: {},
-        produce: { watch: 'watch' }
+        produce: {
+            btc: 'btc',
+            bch: 'bch',
+            ltc: 'ltc',
+            eth: 'eth',
+            etc: 'etc',
+            trx: 'trx'
+        }
     }
 }
 

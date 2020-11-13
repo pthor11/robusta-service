@@ -29,12 +29,15 @@ const user_account_watch = async (params: { request: any }): Promise<CallReturn>
 
         if (!foundUser) throw { error: 'user not found' }
 
+        let topic: string
+
         // check address valid
         switch (_params.currency.type) {
             case CurrencyType.trx:
             case CurrencyType.trc10:
             case CurrencyType.trc20:
                 if (!tronweb.isAddress(_params.address)) throw { error: 'invalid account address' }
+                topic = coinKafkaConfig.topic.produce.trx
                 break;
             default: throw { error: `currency type ${_params.currency.type} not support` }
         }
@@ -70,8 +73,10 @@ const user_account_watch = async (params: { request: any }): Promise<CallReturn>
 
         const stringifiedMessage = JSON.stringify(message)
 
+        console.log({ topic });
+
         const record = await coinProducer.send({
-            topic: coinKafkaConfig.topic.produce.watch,
+            topic,
             messages: [{ value: stringifiedMessage }]
         })
 
