@@ -4,7 +4,6 @@ import { Currency, CurrencyType } from "../models/Currency";
 import { Account } from "../models/Account";
 import { coinProducer } from "../kafka";
 import { coinKafkaConfig } from "../config";
-import { tronweb } from "../tronweb";
 import { WatchMessage } from "../models/WatchMessage";
 
 type UserAccountWatchParams = {
@@ -23,6 +22,8 @@ const user_account_unwatch = async (params: { request: any }): Promise<CallRetur
         const _params: UserAccountWatchParams = JSON.parse(params?.request?.params || '')
 
         console.log({ _params });
+
+        if (!_params.apiKey) throw { code: 'apiKey must be provided' }
 
         const foundUser = await db.collection(collectionNames.users).findOne({ apiKey: _params.apiKey }, { session })
 

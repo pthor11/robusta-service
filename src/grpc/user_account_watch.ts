@@ -21,7 +21,9 @@ const user_account_watch = async (params: { request: any }): Promise<CallReturn>
 
         const _params: UserAccountWatchParams = JSON.parse(params?.request?.params || '')
 
-        console.log({ _params });
+        console.log({ _params, apiKey: _params.apiKey });
+
+        if (!_params.apiKey) throw { error: 'apiKey must be provided' }
 
         const foundUser = await db.collection(collectionNames.users).findOne({ apiKey: _params.apiKey }, { session })
 
@@ -59,9 +61,13 @@ const user_account_watch = async (params: { request: any }): Promise<CallReturn>
 
         console.log({ foundAccount });
 
-        if (foundAccount) throw { error: 'account already watched' }
+        if (!foundAccount) {
+            await db.collection(collectionNames.accounts).insertOne({ ..._params, watch: true, createdAt: new Date() }, { session })
+        } else {
+            if (foundAccount?.watch) throw { error: 'account already watched' }
 
-        await db.collection(collectionNames.accounts).insertOne({ ..._params, watch: true, createdAt: new Date() }, { session })
+            await db.collection(collectionNames.accounts).updateOne({ _id: foundAccount._id }, { $set: { watch: true, createdAt: new Date() } }, { session })
+        }
 
         await session.commitTransaction()
         session.endSession()
@@ -82,7 +88,7 @@ const user_account_watch = async (params: { request: any }): Promise<CallReturn>
 
         console.log({ record });
 
-        return { result: stringifiedMessage }
+        return { result: 'success' }
     } catch (e) {
         await session.abortTransaction()
         session.endSession()
