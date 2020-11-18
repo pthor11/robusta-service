@@ -1,10 +1,10 @@
 version: "3.7"
 
 services:
-  dice-backend:
+  robusta-service:
     build:
       context: .
-      dockerfile: Dockerfile.eth
+      dockerfile: Dockerfile
     ports:
       - "$PORT:$PORT"
     env_file: .env
