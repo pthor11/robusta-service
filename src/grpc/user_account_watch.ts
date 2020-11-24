@@ -90,11 +90,12 @@ const user_account_watch = async (params: { request: any }): Promise<CallReturn>
 
         return { result: 'success' }
     } catch (e) {
+        console.error(e)
         await session.abortTransaction()
         session.endSession()
 
         if (e.code === 112) return user_account_watch(params)
-        if (e.error) return e
+
         throw e
     }
 }
